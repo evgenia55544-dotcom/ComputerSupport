@@ -1,0 +1,147 @@
+---
+title: "Task2"
+author: "Yevheniia Zhernova"
+date: "24/10/2025"
+format:
+  html:
+    embed-resources: true
+editor: source
+---
+
+### 2.1. Querying Vectors
+
+```{r}
+# ---- Setup: ensure Task 1 objects exist ----
+if (!exists("sequence_vector")) sequence_vector <- seq(20, 100, by = 5)
+if (!exists("logical_vector"))  { set.seed(123); logical_vector <- sample(c(TRUE, FALSE), 10, TRUE) }
+if (!exists("m")) {
+set.seed(42)### 2.1. Querying Vectors
+m <- matrix(sample(-50:50, 9, replace = TRUE), nrow = 3, byrow = TRUE)
+rownames(m) <- c("Centrum", "Juhozápad", "Sever")
+colnames(m) <- c("Doprava", "Zeleň", "Voda")
+}
+if (!exists("your_df")) {
+your_df <- data.frame(
+name         = c("Bernolákovo","Ivanka pri Dunaji","Senec","Tomášov","Malinovo"),
+region       = c("Bratislavský kraj","Bratislavský kraj","Bratislavský kraj","Bratislavský kraj","Bratislavský kraj"),
+category     = c("Obec","Obec","Mesto","Obec","Obec"),
+population   = c(9000L, 6800L, 21000L, 3800L, 4300L),
+area_km2     = c(14.5, 18.1, 38.6, 19.7, 10.2),
+is_inhabited = c(TRUE, TRUE, TRUE, TRUE, TRUE),
+has_water    = c(TRUE, TRUE, TRUE, FALSE, TRUE),
+stringsAsFactors = FALSE
+)
+}
+```
+
+2.1.1. From your Sequence vector (the one with all your numbers):
+# ---- 2.1.1 Sequence vector ----
+
+```{r}
+# ---- 2.1.1 Sequence vector ----
+sequence_vector[3]
+sequence_vector[2:5]
+sequence_vector[sequence_vector > 20]
+```
+
+2.1.2. From your Logical vector:
+
+# ---- 2.1.2 Logical vector ----
+
+```{r}
+# ---- 2.1.2 Logical vector ----
+logical_vector[logical_vector]
+which(logical_vector)
+```
+
+### 2.2. Querying Your "Universe" List
+
+```{r}
+my_universe <- list(
+description = "Mini-universe of Bernolákovo and surroundings.",
+matrix3x3   = m,
+vec         = sequence_vector
+)
+
+# access description via $
+
+my_universe$description
+
+# access 3x3 matrix via [[ ]]
+
+my_universe[["matrix3x3"]]
+
+# access the second element of inner vector
+
+my_universe[["vec"]][2]
+```
+
+### 2.3. Investigating Your Data Frame
+
+```{r}
+# first 3 rows
+
+head(your_df, 3)
+
+# value from 4th row, 1st column
+
+your_df[4, 1]
+
+# logical column as a vector
+
+your_df$is_inhabited
+
+# Logical subsetting (example condition)
+
+df_subset <- your_df[your_df$population > 5000, ]
+df_subset
+
+# %in% subsetting (two categories from a column)
+
+df_subset_2 <- your_df[your_df$region %in% c("Bratislavský kraj","Trnavský kraj"), ]
+df_subset_2
+```
+
+### 2.4. Handling "Corrupted" Data (`NA`)
+
+```{r}
+df_corrupted <- your_df
+
+# introduce 3 NAs
+
+df_corrupted[2, "area_km2"]   <- NA
+df_corrupted[5, "population"] <- NA
+df_corrupted[3, "has_water"]  <- NA
+
+# total number of NAs
+
+sum(is.na(df_corrupted))
+
+# number of NAs per column
+
+colSums(is.na(df_corrupted))
+
+# mean with and without na.rm (numeric column with NA)
+
+mean(df_corrupted$population)                # NA
+mean(df_corrupted$population, na.rm = TRUE)  # cleaned mean
+
+# clean data frame with complete cases only
+
+df_clean <- na.omit(df_corrupted)
+df_clean
+```
+
+### 2.5. Bonus Challenge: `which()`
+
+```{r}
+# index of max in a numeric column
+
+idx_max_pop <- which.max(your_df$population)
+your_df[idx_max_pop, ]
+
+# index of min in another numeric column
+
+idx_min_area <- which.min(your_df$area_km2)
+your_df[idx_min_area, ]
+```
