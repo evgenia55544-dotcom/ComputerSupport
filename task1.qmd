@@ -1,0 +1,191 @@
+---
+title: "Task1"
+author: "Yevheniia Zhernova"
+date: "24/10/2025"
+format:
+  html:
+    embed-resources: true
+editor: source
+---
+
+## Question 1 Atomic Types
+Question description
+
+Create the following variables related to your chosen object:
+- 4 numeric values (e.g., population, temperature, size, rating)  
+- 3 integer values (e.g., number of moons, buildings, inhabitants)  
+- 2 logical values (e.g., has_water, is_inhabited)  
+- 3 character values (e.g., name, region, category)
+
+```{r}
+# numeric values
+distance_to_bratislava_km <- 16.3    # km (approx.)
+elevation_m <- 130                 # meters (approx.)
+area <- 14.5                  # <-- теперь создаётся
+avg_density <- 620                 # numeric,
+
+
+
+# code for solving task
+# integer
+population <- 9000L
+num_parks <- 5L
+num_schools <- 3L
+
+#character
+name <- "Bernolákovo"
+old_name <- "Cseklész"
+region <- "Bratislavský kraj"
+category <- "Obec"  
+
+# logical
+has_water <- TRUE
+is_inhabited <- TRUE
+```
+
+## Question 2 Vectors
+
+Question description
+Create three different vectors:
+
+```{r}
+# code for solving task
+# 1. Numeric vector
+numeric_vector <- c(population, area)
+numeric_vector
+# [1] 9000.0   14.5
+
+# 2. Sequence vector (from 20 to 100 step 5)
+sequence_vector <- seq(from = 20, to = 100, by = 5)
+sequence_vector
+# [1] 20 25 30 ... 100
+
+# 3. Logical vector of 10 random TRUE/FALSE 
+set.seed(123)  # for repeating result
+logical_vector <- sample(c(TRUE, FALSE), size = 10, replace = TRUE)
+logical_vector
+```
+
+## Question 3 Matrix
+
+```{r}
+set.seed(42)  # for reproducibility
+
+# 3×3 matrix with random integers between -50 and 50
+m <- matrix(
+sample(-50:50, size = 9, replace = TRUE),
+nrow = 3, ncol = 3, byrow = TRUE)
+
+# Name rows/columns (Bernolákovo theme)
+rownames(m) <- c("Centrum", "Juhozápad", "Sever")
+colnames(m) <- c("Doprava", "Zeleň", "Voda")
+
+# Show matrix
+m
+
+# Row and column means
+row_avgs <- rowMeans(m)
+col_avgs <- colMeans(m)
+
+row_avgs
+col_avgs
+```
+
+```{r}
+# --- Global setup (run first) ---
+library(dplyr)
+library(readr)
+
+# Create bern_data once, no matter what you already have
+if (!exists("bern_data")) {
+  if (exists("bern_df")) {
+    bern_data <- bern_df
+  } else if (file.exists("bernolakovo_df.csv")) {
+    bern_data <- read_csv("bernolakovo_df.csv", show_col_types = FALSE)
+  } else {
+    stop("bern_data is missing: create bern_df earlier OR place bernolakovo_df.csv next to this .qmd")
+  }
+}
+
+```
+
+## Question 4 List
+
+```{r}
+bernolakovolist <- list(
+  description = "Bernolákovo mini-universe: basic facts, vectors for practice, and a themed matrix with stats.",
+  
+  scalars = list(
+population   = population,
+  area         = area,
+has_water    = has_water,
+    is_inhabited = is_inhabited,
+    name         = name,
+old_name     = old_name,
+    region       = region,
+ category     = category),
+  
+  vectors = list(
+numeric  = numeric_vector,
+  sequence = sequence_vector,
+logical  = logical_vector ),
+  
+  matrix = m,
+  
+  matrix_stats = list(
+     row_means = row_avgs,
+col_means = col_avgs))
+
+
+str(bernolakovolist)
+```
+
+## Question 5 Factor
+
+```{r}
+development_level <- factor(
+  c("medium", "high", "medium", "low", "high", "medium", "low"),
+  levels = c("low", "medium", "high"), ordered = TRUE
+)
+
+# Check counts
+table(development_level)
+```
+
+## Question 6 Data Frame
+
+```{r}
+bern_df <- data.frame(
+  district = c("Centrum", "Juhozápad", "Sever", "Východ", "Záhrady", "Pri Jazere"),
+  pop      = c(1800, 1200, 950, 1100, 700, 450),              # numeric
+  has_playground = c(TRUE, TRUE, FALSE, TRUE, FALSE, TRUE),   # logical
+  zone = factor(c("mixed", "residential", "residential",  "industrial", "residential", "recreational"),
+  levels = c("residential", "mixed", "industrial", "recreational")),
+  dist_km  = c(0.2, 1.4, 1.1, 2.3, 1.8, 2.7)                  # numeric
+)
+
+# Inspect
+str(bern_df)
+summary(bern_df)
+
+# Add a derived column (example rule)
+bern_df$priority <- with(
+  bern_df,
+  ifelse(pop > 1000 & !has_playground, "high",
+         ifelse(pop > 1000, "medium", "low"))
+)
+bern_df$priority <- factor(bern_df$priority, levels = c("low", "medium", "high"), ordered = TRUE)
+
+# Quick checks
+table(bern_df$zone)
+table(bern_df$priority)
+bern_df
+```
+
+
+```{r}
+# --- Write to files ---
+write.csv(bern_data, "bernolakovo_df.csv", row.names = FALSE)
+saveRDS(bern_data, "bernolakovo_df.rds")
+```
+
